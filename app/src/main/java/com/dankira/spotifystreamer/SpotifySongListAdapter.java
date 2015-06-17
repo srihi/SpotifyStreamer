@@ -75,5 +75,6 @@ public class SpotifySongListAdapter extends ArrayAdapter<SongInfo> {
 
         this.songInfoArrayList = songInfoList;
         this.layout = layout;
+        this.notifyDataSetChanged();
     }
 }
