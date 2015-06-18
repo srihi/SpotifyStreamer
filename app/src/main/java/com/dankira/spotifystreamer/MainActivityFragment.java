@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,22 +21,17 @@ import java.util.concurrent.ExecutionException;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Album;
-import kaaes.spotify.webapi.android.models.AlbumSimple;
 import kaaes.spotify.webapi.android.models.AlbumsPager;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
 
-    SpotifySongListAdapter searchResultListAdapter;
-    ArrayList<SongInfo> searchResultArray;
+    SpotifyArtistListAdapter searchResultListAdapter;
+    ArrayList<ArtistInfo> searchResultArray;
     String searchTerm = "Jay Z";
 
     public MainActivityFragment() {
@@ -66,8 +59,8 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_main, container, false);
-        searchResultArray = new ArrayList<SongInfo>();
-        searchResultListAdapter = new SpotifySongListAdapter(getActivity(),R.layout.list_item_song,searchResultArray);
+        searchResultArray = new ArrayList<ArtistInfo>();
+        searchResultListAdapter = new SpotifyArtistListAdapter(getActivity(),R.layout.list_item_artist,searchResultArray);
 
         final ListView searchResultView = (ListView) fragmentView.findViewById(R.id.search_result_list);
         searchResultView.setAdapter(searchResultListAdapter);
@@ -75,11 +68,10 @@ public class MainActivityFragment extends Fragment {
         searchResultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SongInfo songInfo = searchResultListAdapter.getItem(position);
+                ArtistInfo artistInfo = searchResultListAdapter.getItem(position);
 
                 Intent artistTop10DisplayIntent = new Intent(getActivity(),ArtistTop10.class);
-                artistTop10DisplayIntent.putExtra("SONGINFO",songInfo);
-
+                artistTop10DisplayIntent.putExtra("SONGINFO", artistInfo);
                 startActivity(artistTop10DisplayIntent);
             }
         });
@@ -122,22 +114,23 @@ public class MainActivityFragment extends Fragment {
             int i = 0;
 
             for (Artist s : artistsPager.artists.items) {
-                final SongInfo info = new SongInfo();
-                info.setAlbumTitle(s.name);
+                final ArtistInfo info = new ArtistInfo();
+                info.setArtistName(s.name);
+                info.setArtistId(s.id);
                 if (s.images.size() != 0) {
-                    info.setAlbumArtUrl(s.images.get(0).url);
+                    info.setArtistImageUrl(s.images.get(0).url);
                 }
                 else {
                     AlbumsPager albumsPager = spotify.searchAlbums(s.name);
                     if (albumsPager.albums.items.size() > 0) {
-                        info.setAlbumArtUrl(albumsPager.albums.items.get(0).images.get(0).url);
+                        info.setArtistImageUrl(albumsPager.albums.items.get(0).images.get(0).url);
                     }
                     else
                     {
                         Log.v("SpotifyStreamer","No images found for ....."+s.name);
                     }
                 }
-                info.setAlbumTitle(s.name);
+                info.setArtistName(s.name);
                 searchResultArray.add(i, info);
                 i++;
             }

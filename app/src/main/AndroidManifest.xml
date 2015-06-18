@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:parentActivityName=".MainActivity"
             android:name=".ArtistTop10"
             android:label="@string/title_activity_artist_top10" >
         </activity>

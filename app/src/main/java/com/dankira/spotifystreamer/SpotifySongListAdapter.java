@@ -1,7 +1,6 @@
 package com.dankira.spotifystreamer;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,67 +13,66 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 /**
- * Created by Dawit on 6/16/2015.
+ * Created by da on 6/18/2015.
  */
 public class SpotifySongListAdapter extends ArrayAdapter<SongInfo> {
 
-    static class ViewHolder {
-        private ImageView albumArtImageView;
+    public static class SongListViewHolder{
+        private ImageView albumImageView;
         private TextView albumTitleTextView;
+        private TextView songTitleTextView;
     }
 
     private int layout;
     private ArrayList<SongInfo> songInfoArrayList;
-    //private DrawableCache drawableCache = DrawableCache.getInstance();
 
-    //implementation example here http://stackoverflow.com/questions/6472248/how-use-arrayadaptert-with-complex-layout
+
     @Override
-    public View getView(int position, View contentView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
+
         View view = null;
-        ViewHolder viewHolder = null;
+        SongListViewHolder songListViewHolder = null;
 
-        if (contentView == null)
-        {
-            LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = layoutInflater.inflate(layout, null);
+        if(convertView == null){
+            LayoutInflater layoutInflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = layoutInflater.inflate(layout,null);
 
-            if (view != null) {
-                viewHolder = new ViewHolder();
-
-                viewHolder.albumArtImageView = (ImageView) view.findViewById(R.id.search_result_imageView);
-                viewHolder.albumTitleTextView = (TextView) view.findViewById(R.id.search_result_artist);
-                view.setTag(viewHolder);
+            if(view != null){
+                songListViewHolder = new SongListViewHolder();
+                songListViewHolder.albumImageView = (ImageView)view.findViewById(R.id.album_art_image);
+                songListViewHolder.albumTitleTextView=(TextView)view.findViewById(R.id.song_album_text);
+                songListViewHolder.songTitleTextView =(TextView)view.findViewById(R.id.song_title_text) ;
+                view.setTag(songListViewHolder);
             }
         }
         else
         {
-            view = contentView;
-            viewHolder = (ViewHolder) contentView.getTag();
+            view = convertView;
+            songListViewHolder = (SongListViewHolder)convertView.getTag();
         }
 
-        if (viewHolder != null) {
+        if(songListViewHolder != null)
+        {
             SongInfo songInfo = songInfoArrayList.get(position);
-            if (songInfo != null) {
+            if(songInfo != null){
                 Picasso.with(getContext())
                         .load(songInfo.getAlbumArtUrl())
-                        .resize(150, 150)
+                        .resize(200, 200)
                         .centerCrop()
                         .placeholder(R.drawable.music_album_ph)
                         .error(R.drawable.music_album_ph)
-                        .into(viewHolder.albumArtImageView);
-                viewHolder.albumTitleTextView.setText(songInfo.getAlbumTitle());
+                        .into(songListViewHolder.albumImageView);
+                songListViewHolder.albumTitleTextView.setText(songInfo.getAlbumTitle());
+                songListViewHolder.songTitleTextView.setText(songInfo.getSongTitle());
             }
         }
-
 
         return view;
     }
 
-    public SpotifySongListAdapter(Context context, int layout, ArrayList<SongInfo> songInfoList) {
-        super(context, layout, songInfoList);
-
-        this.songInfoArrayList = songInfoList;
+    public SpotifySongListAdapter(Context context, int layout, ArrayList<SongInfo> objects) {
+        super(context, layout, objects);
         this.layout = layout;
-        this.notifyDataSetChanged();
+        this.songInfoArrayList = objects;
     }
 }
