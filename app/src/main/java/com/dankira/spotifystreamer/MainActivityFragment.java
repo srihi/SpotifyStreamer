@@ -1,5 +1,6 @@
 package com.dankira.spotifystreamer;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -69,6 +71,18 @@ public class MainActivityFragment extends Fragment {
 
         final ListView searchResultView = (ListView) fragmentView.findViewById(R.id.search_result_list);
         searchResultView.setAdapter(searchResultListAdapter);
+
+        searchResultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SongInfo songInfo = searchResultListAdapter.getItem(position);
+
+                Intent artistTop10DisplayIntent = new Intent(getActivity(),ArtistTop10.class);
+                artistTop10DisplayIntent.putExtra("SONGINFO",songInfo);
+
+                startActivity(artistTop10DisplayIntent);
+            }
+        });
 
         final EditText searchText = (EditText) fragmentView.findViewById(R.id.search_term_editText);
         if(searchText != null) {

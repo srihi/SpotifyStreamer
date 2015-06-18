@@ -1,9 +1,11 @@
 package com.dankira.spotifystreamer;
 
+import java.io.Serializable;
+
 /**
  * Created by Dawit on 6/16/2015.
  */
-public class SongInfo {
+public class SongInfo implements Serializable {
     private String albumArtUrl;
     private String songTitle;
     private String albumTitle;
