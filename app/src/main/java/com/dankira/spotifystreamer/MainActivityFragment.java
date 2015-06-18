@@ -1,6 +1,5 @@
 package com.dankira.spotifystreamer;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,19 +33,22 @@ import retrofit.RetrofitError;
  */
 public class MainActivityFragment extends Fragment {
 
-    SpotifyArtistListAdapter searchResultListAdapter;
-    ArrayList<ArtistInfo> searchResultArray;
-    String searchTerm = "Jay Z";
-    Toast toast;
-
+    private SpotifyArtistListAdapter searchResultListAdapter;
+    private ArrayList<ArtistInfo> searchResultArray = new ArrayList<>();
+    private String searchTerm = "Jay Z";
+    private Toast toast;
+    private final String BUNDLE_TAG_SEARCHRESULTARRAY = "SEARCHRESULTARRAY";
+    private String LOG_TAG = this.getClass().getSimpleName();
     public MainActivityFragment() {
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
-        outState.putSerializable("SEARCHRESULTARRAY",searchResultArray);
         super.onSaveInstanceState(outState);
+        if(searchResultArray != null && searchResultArray.size() !=0)
+        {
+            outState.putSerializable(BUNDLE_TAG_SEARCHRESULTARRAY,searchResultArray);
+        }
     }
 
     @Override
@@ -54,44 +56,49 @@ public class MainActivityFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState != null)
         {
-            searchResultArray = (ArrayList<ArtistInfo>)savedInstanceState.getSerializable("SEARCHRESULTARRAY");
+            searchResultArray.clear();
+            ArrayList<ArtistInfo> savedResultArray = (ArrayList<ArtistInfo>)savedInstanceState.getSerializable(BUNDLE_TAG_SEARCHRESULTARRAY);
+            searchResultArray.addAll(savedResultArray);
             searchResultListAdapter.notifyDataSetChanged();
         }
     }
 
-    //    @Override
-//    public void onStart() {
-//        super.onStart();
-//        searchResultArray.clear();
-//        GetSearchResults();
-//        searchResultListAdapter.notifyDataSetChanged();
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
     private void GetSearchResults() {
         SpotifySearchTask task = new SpotifySearchTask();
-        try {
+
+        try
+        {
             task.execute(searchTerm).get();
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e)
+        {
             e.printStackTrace();
-        } catch (ExecutionException e) {
+            Log.v(LOG_TAG,e.getMessage());
+        }
+        catch (ExecutionException e)
+        {
             e.printStackTrace();
+            Log.v(LOG_TAG,e.getMessage());
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_main, container, false);
-        searchResultArray = new ArrayList<ArtistInfo>();
         searchResultListAdapter = new SpotifyArtistListAdapter(getActivity(),R.layout.list_item_artist,searchResultArray);
 
-        final ListView searchResultView = (ListView) fragmentView.findViewById(R.id.search_result_list);
+        ListView searchResultView = (ListView) fragmentView.findViewById(R.id.search_result_list);
         searchResultView.setAdapter(searchResultListAdapter);
 
         searchResultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ArtistInfo artistInfo = searchResultListAdapter.getItem(position);
-
                 Intent artistTop10DisplayIntent = new Intent(getActivity(),ArtistTop10.class);
                 artistTop10DisplayIntent.putExtra("SONGINFO", artistInfo);
                 startActivity(artistTop10DisplayIntent);
@@ -103,15 +110,12 @@ public class MainActivityFragment extends Fragment {
             searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    searchTerm = searchText.getText().toString();
                     boolean handled = false;
-
+                    searchText.clearFocus();
+                    searchTerm = searchText.getText().toString();
                     if (actionId == EditorInfo.IME_ACTION_SEARCH || event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
                     {
-                        Log.v("SpotifyStreamer", "Search button pressed......" + actionId + "search term "+searchTerm);
-                        searchResultListAdapter.clear();
                         GetSearchResults();
-                        searchResultListAdapter.notifyDataSetChanged();
                         InputMethodManager imm =(InputMethodManager)getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
@@ -123,6 +127,7 @@ public class MainActivityFragment extends Fragment {
         }
         return fragmentView;
     }
+
     private void ShowCustomToast(String textMessage) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup) getView().findViewById(R.id.toast_layout_root));
@@ -140,8 +145,10 @@ public class MainActivityFragment extends Fragment {
         toast.show();
 
     }
+
     public class SpotifySearchTask extends AsyncTask<String,Void,Void> {
 
+        private String LOG_TAG = this.getClass().getSimpleName();
         @Override
         protected Void doInBackground(String... params) {
             SpotifyApi api = new SpotifyApi();
@@ -156,7 +163,7 @@ public class MainActivityFragment extends Fragment {
                     getActivity().runOnUiThread((new Runnable() {
                         @Override
                         public void run() {
-                            ShowCustomToast("There are no artists maching search criteria.");
+                            ShowCustomToast("There are no artists matching search criteria.");
                         }
                     }));
 
@@ -174,7 +181,7 @@ public class MainActivityFragment extends Fragment {
                         if (albumsPager.albums.items.size() > 0) {
                             info.setArtistImageUrl(albumsPager.albums.items.get(0).images.get(0).url);
                         } else {
-                            Log.v("SpotifyStreamer", "No images found for ....." + s.name);
+                            Log.v(LOG_TAG, "No images found for ....." + s.name);
                         }
                     }
                     info.setArtistName(s.name);
@@ -185,7 +192,7 @@ public class MainActivityFragment extends Fragment {
                 getActivity().runOnUiThread((new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG).show();
+                        ShowCustomToast(error.getMessage());
                     }
                 }));
 
@@ -196,7 +203,6 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
             searchResultListAdapter.notifyDataSetChanged();
         }
     }

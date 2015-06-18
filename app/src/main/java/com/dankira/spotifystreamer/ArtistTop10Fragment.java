@@ -2,8 +2,8 @@ package com.dankira.spotifystreamer;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.AlbumsPager;
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Track;
-import kaaes.spotify.webapi.android.models.TrackSimple;
 import kaaes.spotify.webapi.android.models.Tracks;
 
 /**
@@ -29,8 +25,9 @@ import kaaes.spotify.webapi.android.models.Tracks;
  */
 public class ArtistTop10Fragment extends Fragment {
 
-    SpotifySongListAdapter top10SongListAdapter;
-    ArrayList<SongInfo> top10ResultArray;
+    private SpotifySongListAdapter top10SongListAdapter;
+    private ArrayList<SongInfo> top10ResultArray;
+    private String LOG_TAG = this.getClass().getSimpleName();
 
     public ArtistTop10Fragment() {
     }
@@ -39,7 +36,7 @@ public class ArtistTop10Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_artist_top10, container, false);
 
-        top10ResultArray = new ArrayList<SongInfo>();
+        top10ResultArray = new ArrayList<>();
         top10SongListAdapter = new SpotifySongListAdapter(getActivity(),R.layout.list_item_song,top10ResultArray);
         ListView top10ListView  = (ListView)fragmentView.findViewById(R.id.top10_result_list);
 
@@ -64,11 +61,18 @@ public class ArtistTop10Fragment extends Fragment {
 
         SpotifyTop10Task task = new SpotifyTop10Task();
 
-        try {
+        try
+        {
             task.execute(artistId).get();
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e)
+        {
+            Log.v(LOG_TAG,e.getMessage());
             e.printStackTrace();
-        } catch (ExecutionException e) {
+        }
+        catch (ExecutionException e)
+        {
+            Log.v(LOG_TAG,e.getMessage());
             e.printStackTrace();
         }
     }
@@ -106,7 +110,6 @@ public class ArtistTop10Fragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
             top10SongListAdapter.notifyDataSetChanged();
         }
     }
