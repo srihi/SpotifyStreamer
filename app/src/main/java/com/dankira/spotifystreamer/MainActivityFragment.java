@@ -40,7 +40,7 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<ArtistInfo> searchResultArray = new ArrayList<>();
     private String searchTerm = "Jay Z";
     private Toast toast;
-    private final String BUNDLE_TAG_SEARCHRESULTARRAY = "SEARCHRESULTARRAY";
+    private final String BUNDLE_TAG_SEARCH_RESULT_ARRAY = "SEARCHRESULTARRAY";
     private String LOG_TAG = this.getClass().getSimpleName();
     public MainActivityFragment() {
     }
@@ -50,7 +50,7 @@ public class MainActivityFragment extends Fragment {
         super.onSaveInstanceState(outState);
         if(searchResultArray != null && searchResultArray.size() !=0)
         {
-            outState.putSerializable(BUNDLE_TAG_SEARCHRESULTARRAY,searchResultArray);
+            outState.putSerializable(BUNDLE_TAG_SEARCH_RESULT_ARRAY,searchResultArray);
         }
     }
 
@@ -60,31 +60,29 @@ public class MainActivityFragment extends Fragment {
         if(savedInstanceState != null)
         {
             searchResultArray.clear();
-            if(savedInstanceState.getSerializable(BUNDLE_TAG_SEARCHRESULTARRAY) != null){
-                ArrayList<ArtistInfo> savedResultArray = (ArrayList<ArtistInfo>)savedInstanceState.getSerializable(BUNDLE_TAG_SEARCHRESULTARRAY);
+            if(savedInstanceState.getSerializable(BUNDLE_TAG_SEARCH_RESULT_ARRAY) != null){
+                ArrayList<ArtistInfo> savedResultArray = (ArrayList<ArtistInfo>)savedInstanceState.getSerializable(BUNDLE_TAG_SEARCH_RESULT_ARRAY);
                 searchResultArray.addAll(savedResultArray);
                 searchResultListAdapter.notifyDataSetChanged();
             }
 
         }
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
     private void GetSearchResults() {
         if(!isNetworkAvailable())
         {
-            ShowCustomToast("There is no internet connection available.");
+            ShowCustomToast(getString(R.string.connection_unavailable));
             return;
-
         }
         SpotifySearchTask task = new SpotifySearchTask();
-
         try
         {
+            if(searchTerm == null || searchTerm.isEmpty())
+            {
+                ShowCustomToast(getString(R.string.search_term_empty));
+                Log.v(LOG_TAG," An empty string or a null parameter was passed to this method.");
+                return;
+            }
             task.execute(searchTerm).get();
         }
         catch (InterruptedException e)
@@ -133,9 +131,8 @@ public class MainActivityFragment extends Fragment {
                     searchTerm = searchText.getText().toString();
                     if (actionId == EditorInfo.IME_ACTION_SEARCH || event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
                     {
-
                         GetSearchResults();
-                        InputMethodManager imm =(InputMethodManager)getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+                        InputMethodManager imm =(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
                         handled = true;
@@ -164,8 +161,14 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected Void doInBackground(String... params) {
             SpotifyApi api = new SpotifyApi();
-
             SpotifyService spotify = api.getService();
+
+            if(params.length == 0 || params[0] == null || params[0].isEmpty())
+            {
+                Log.v(LOG_TAG," An empty string or a null parameter was passed to this method.");
+                return null;
+            }
+
             try {
                 ArtistsPager artistsPager = spotify.searchArtists(params[0]);
                 int i = 0;
@@ -175,7 +178,7 @@ public class MainActivityFragment extends Fragment {
                     getActivity().runOnUiThread((new Runnable() {
                         @Override
                         public void run() {
-                            ShowCustomToast("There are no artists matching search criteria.");
+                            ShowCustomToast(getString(R.string.no_artist_found));
                         }
                     }));
 

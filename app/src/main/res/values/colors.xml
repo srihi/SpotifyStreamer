@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="beige">#3C3F41</color>
+    <color name="toast_text">#212121</color>
+    <color name="toaxt_backgroud">#FFF</color>
 </resources>

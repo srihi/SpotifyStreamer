@@ -6,10 +6,10 @@
     android:layout_height="wrap_content">
     <ImageView
         android:id="@+id/album_art_image"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:paddingLeft="@dimen/song_item_image_padding"
+        android:paddingRight="@dimen/song_item_image_padding"
+        android:layout_width="@dimen/song_item_image_width"
+        android:layout_height="@dimen/song_item_image_height"
         android:layout_weight="3"/>
     <RelativeLayout
         android:layout_centerVertical="true"
@@ -21,13 +21,13 @@
         <TextView
             android:fontFamily="sans-serif"
             android:textStyle="bold"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/song_item_text_margin"
             android:id="@+id/song_title_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/song_item_text_margin"
             android:id="@+id/song_album_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
