@@ -1,14 +1,20 @@
 package com.dankira.spotifystreamer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +34,7 @@ public class ArtistTop10Fragment extends Fragment {
     private SpotifySongListAdapter top10SongListAdapter;
     private ArrayList<SongInfo> top10ResultArray;
     private String LOG_TAG = this.getClass().getSimpleName();
+    private Toast toast;
 
     public ArtistTop10Fragment() {
     }
@@ -57,8 +64,32 @@ public class ArtistTop10Fragment extends Fragment {
         return fragmentView;
     }
 
+    private void ShowCustomToast(String textMessage) {
+
+        if (toast != null) {
+            toast.cancel();
+        }
+        toast = Toast.makeText(getActivity().getApplicationContext(), textMessage, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.show();
+
+    }
+
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isAvailable();
+    }
+
     private void GetTop10Tracks(String artistId) {
 
+        if(!isNetworkAvailable())
+        {
+            ShowCustomToast("There is no internet connection available.");
+            return;
+        }
         SpotifyTop10Task task = new SpotifyTop10Task();
 
         try

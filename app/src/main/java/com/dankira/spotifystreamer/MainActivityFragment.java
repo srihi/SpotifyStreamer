@@ -1,6 +1,9 @@
 package com.dankira.spotifystreamer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -57,9 +60,12 @@ public class MainActivityFragment extends Fragment {
         if(savedInstanceState != null)
         {
             searchResultArray.clear();
-            ArrayList<ArtistInfo> savedResultArray = (ArrayList<ArtistInfo>)savedInstanceState.getSerializable(BUNDLE_TAG_SEARCHRESULTARRAY);
-            searchResultArray.addAll(savedResultArray);
-            searchResultListAdapter.notifyDataSetChanged();
+            if(savedInstanceState.getSerializable(BUNDLE_TAG_SEARCHRESULTARRAY) != null){
+                ArrayList<ArtistInfo> savedResultArray = (ArrayList<ArtistInfo>)savedInstanceState.getSerializable(BUNDLE_TAG_SEARCHRESULTARRAY);
+                searchResultArray.addAll(savedResultArray);
+                searchResultListAdapter.notifyDataSetChanged();
+            }
+
         }
     }
 
@@ -69,6 +75,12 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void GetSearchResults() {
+        if(!isNetworkAvailable())
+        {
+            ShowCustomToast("There is no internet connection available.");
+            return;
+
+        }
         SpotifySearchTask task = new SpotifySearchTask();
 
         try
@@ -83,8 +95,14 @@ public class MainActivityFragment extends Fragment {
         catch (ExecutionException e)
         {
             e.printStackTrace();
-            Log.v(LOG_TAG,e.getMessage());
+            Log.v(LOG_TAG, e.getMessage());
         }
+    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isAvailable();
     }
 
     @Override
@@ -115,6 +133,7 @@ public class MainActivityFragment extends Fragment {
                     searchTerm = searchText.getText().toString();
                     if (actionId == EditorInfo.IME_ACTION_SEARCH || event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
                     {
+
                         GetSearchResults();
                         InputMethodManager imm =(InputMethodManager)getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -129,19 +148,12 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void ShowCustomToast(String textMessage) {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View toastLayout = inflater.inflate(R.layout.custom_toast, (ViewGroup) getView().findViewById(R.id.toast_layout_root));
-
-        TextView toastTextView = (TextView) toastLayout.findViewById(R.id.toast_textArea);
-        toastTextView.setText(textMessage);
 
         if (toast != null) {
             toast.cancel();
         }
-        toast = new Toast(getActivity().getApplicationContext());
+        toast = Toast.makeText(getActivity().getApplicationContext(), textMessage, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.setView(toastLayout);
         toast.show();
 
     }
