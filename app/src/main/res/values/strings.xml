@@ -8,4 +8,7 @@
     <string name="connection_unavailable">There is no internet connection available.</string>
     <string name="no_artist_found">There are no artists matching search criteria.</string>
     <string name="search_term_empty">You were looking for nothing?... well here goes nothing.</string>
+    <string name="title_activity_player">PlayerActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>

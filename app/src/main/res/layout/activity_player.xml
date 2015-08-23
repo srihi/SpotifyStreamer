@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/artist_top10_fragment_container"
+    android:id="@+id/player_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ArtistTop10"
+    tools:context=".PlayerActivity"
     tools:ignore="MergeRootFrame" />

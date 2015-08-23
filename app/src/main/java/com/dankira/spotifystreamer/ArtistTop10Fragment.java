@@ -1,19 +1,25 @@
 package com.dankira.spotifystreamer;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.dankira.spotifystreamer.service.SpotifySamplerService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +43,7 @@ public class ArtistTop10Fragment extends Fragment {
     private Toast toast;
     private final String spotify_country_tag ="country";
     private final String spotify_top10_country_code = "us";
+    private ArtistInfo mArtistInfo;
 
     public ArtistTop10Fragment() {
     }
@@ -51,21 +58,40 @@ public class ArtistTop10Fragment extends Fragment {
 
         ListView top10ListView  = (ListView)fragmentView.findViewById(R.id.top10_result_list);
         top10ListView.setAdapter(top10SongListAdapter);
+        top10ListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SongInfo songInfo = top10SongListAdapter.getItem(position);
+                if (MainActivity.mTwoPane) {
+                    Log.v(LOG_TAG, "Orientation is landscape....");
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("Top10List", top10ResultArray);
+                    extras.putInt("Position", position);
+                    PlayerDialog df = new PlayerDialog();
+                    df.setArguments(extras);
+                    df.show(getActivity().getSupportFragmentManager(),"Spotify Sampler");
+                } else {
+                    Log.v(LOG_TAG, "Orientation is portrait....");
+                    Intent playerDialogIntent = new Intent(getActivity(), PlayerActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("Top10List", top10ResultArray);
+                    extras.putInt("Position", position);
+                    playerDialogIntent.putExtras(extras);
+                    startActivity(playerDialogIntent);
+                }
+            }
+        });
 
-        Intent referrerIntent;
-        referrerIntent = getActivity().getIntent();
-        if(referrerIntent != null)
+        Bundle argument = getArguments();
+        if(argument != null)
         {
-            // unpack the data passed from the calling intent.
-            ArtistInfo passedArtistInfo = (ArtistInfo)referrerIntent.getSerializableExtra("SONGINFO");
+            mArtistInfo = (ArtistInfo)argument.getSerializable("SONGINFO");
 
-            if(passedArtistInfo != null)
-            {
-                getActivity().setTitle(passedArtistInfo.getArtistName() + getString(R.string.title_top10));
-                GetTop10Tracks(passedArtistInfo.getArtistId());
+            if(mArtistInfo != null) {
+                getActivity().setTitle(mArtistInfo.getArtistName() + getString(R.string.title_top10));
+                GetTop10Tracks(mArtistInfo.getArtistId());
             }
         }
-
         return fragmentView;
     }
 
@@ -163,6 +189,8 @@ public class ArtistTop10Fragment extends Fragment {
 
                     info.setSongTitle(s.name);
                     info.setAlbumTitle(s.album.name);
+                    info.setArtistName(s.artists.get(0).name);
+                    info.setSampleStreamUrl(s.preview_url);
                     top10ResultArray.add(i, info);
                     i++;
                 }

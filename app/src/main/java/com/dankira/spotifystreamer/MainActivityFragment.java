@@ -1,5 +1,6 @@
 package com.dankira.spotifystreamer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -50,7 +51,7 @@ public class MainActivityFragment extends Fragment {
         super.onSaveInstanceState(outState);
         if(searchResultArray != null && searchResultArray.size() !=0)
         {
-            outState.putSerializable(BUNDLE_TAG_SEARCH_RESULT_ARRAY,searchResultArray);
+            outState.putSerializable(BUNDLE_TAG_SEARCH_RESULT_ARRAY, searchResultArray);
         }
     }
 
@@ -68,6 +69,7 @@ public class MainActivityFragment extends Fragment {
 
         }
     }
+
     private void GetSearchResults() {
         if(!isNetworkAvailable())
         {
@@ -96,6 +98,7 @@ public class MainActivityFragment extends Fragment {
             Log.v(LOG_TAG, e.getMessage());
         }
     }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -115,9 +118,21 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ArtistInfo artistInfo = searchResultListAdapter.getItem(position);
-                Intent artistTop10DisplayIntent = new Intent(getActivity(),ArtistTop10.class);
-                artistTop10DisplayIntent.putExtra("SONGINFO", artistInfo);
-                startActivity(artistTop10DisplayIntent);
+
+                if (MainActivity.mTwoPane) {
+                    Log.v(LOG_TAG,"Orientation is landscape....");
+                    Bundle args = new Bundle();
+                    args.putSerializable("SONGINFO", artistInfo);
+                    ArtistTop10Fragment df = new ArtistTop10Fragment();
+                    df.setArguments(args);
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.top10fragment_container, df, MainActivity.DETAILFRAGMENT_TAG)
+                            .commit();
+                } else {
+                    Intent artistTop10DisplayIntent = new Intent(getActivity(), ArtistTop10.class);
+                    artistTop10DisplayIntent.putExtra("SONGINFO", artistInfo);
+                    startActivity(artistTop10DisplayIntent);
+                }
             }
         });
 
@@ -142,6 +157,12 @@ public class MainActivityFragment extends Fragment {
             });
         }
         return fragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
     private void ShowCustomToast(String textMessage) {
@@ -220,5 +241,6 @@ public class MainActivityFragment extends Fragment {
             super.onPostExecute(aVoid);
             searchResultListAdapter.notifyDataSetChanged();
         }
+
     }
 }

@@ -5,31 +5,30 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class ArtistTop10 extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class PlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artist_top10);
+        setContentView(R.layout.activity_player);
 
         if(savedInstanceState == null)
         {
-            ArtistInfo passedArtistInfo = (ArtistInfo)getIntent().getSerializableExtra("SONGINFO");
-            Bundle args = new Bundle();
-            args.putSerializable("SONGINFO", passedArtistInfo);
-            ArtistTop10Fragment df = new ArtistTop10Fragment();
-            df.setArguments(args);
+            Bundle extras = getIntent().getExtras();
+            PlayerDialog df = new PlayerDialog();
+            df.setArguments(extras);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.artist_top10_fragment_container, df, MainActivity.DETAILFRAGMENT_TAG)
+                    .add(R.id.player_fragment_container, df, MainActivity.DETAILFRAGMENT_TAG)
                     .commit();
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_artist_top10, menu);
+        getMenuInflater().inflate(R.menu.menu_player, menu);
         return true;
     }
 

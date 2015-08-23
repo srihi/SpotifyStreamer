@@ -1,0 +1,22 @@
+<!--
+This layout is a two-pane layout for the Items master/detail flow.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:layout_margin="@dimen/container_margin">
+<fragment
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment_main"
+    android:name="com.dankira.spotifystreamer.MainActivityFragment"
+    tools:layout="@layout/fragment_main"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"/>
+<FrameLayout
+    android:id="@+id/top10fragment_container"
+    android:layout_width="0dp"
+    android:layout_weight="1"
+    android:layout_height="fill_parent"/>
+</LinearLayout>
