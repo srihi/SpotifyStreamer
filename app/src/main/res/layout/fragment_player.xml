@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" android:padding="4dp">
     <TextView
         android:id="@+id/player_artist_name"
         android:layout_width="fill_parent"
@@ -72,35 +72,33 @@
         android:layout_gravity="center"
         android:gravity="center"
         >
-        <Button
+        <ImageButton
             android:id="@+id/player_button_prev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
+            android:layout_weight="1"
             android:gravity="center"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/ic_skip_previous_black_24dp"/>
-        <ToggleButton
+            android:src="@drawable/ic_skip_previous_black_24dp"/>
+        <ImageButton
             android:id="@+id/player_button_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
+            android:layout_weight="1"
             android:gravity="center"
             android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:textOff=""
-            android:textOn=""
-            android:background="@drawable/ic_play_pause"/>
-        <Button
+            android:src="@drawable/ic_play_arrow_black_24dp"/>
+        <ImageButton
             android:id="@+id/player_button_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
+            android:layout_weight="1"
             android:layout_gravity="center"
             android:gravity="center"
             android:layout_margin="4dp"
-            android:background="@drawable/ic_skip_next_black_24dp"/>
+            android:src="@drawable/ic_skip_next_black_24dp"/>
     </LinearLayout>
 
 

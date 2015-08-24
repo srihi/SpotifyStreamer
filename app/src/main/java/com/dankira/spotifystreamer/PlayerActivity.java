@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
-
 public class PlayerActivity extends AppCompatActivity {
 
     @Override
@@ -17,29 +15,24 @@ public class PlayerActivity extends AppCompatActivity {
         if(savedInstanceState == null)
         {
             Bundle extras = getIntent().getExtras();
-            PlayerDialog df = new PlayerDialog();
+            PlayerDialogFragment df = new PlayerDialogFragment();
             df.setArguments(extras);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.player_fragment_container, df, MainActivity.DETAILFRAGMENT_TAG)
+                    .add(R.id.player_fragment_container, df, MainActivity.DETAIL_FRAGMENT_TAG)
                     .commit();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_player, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

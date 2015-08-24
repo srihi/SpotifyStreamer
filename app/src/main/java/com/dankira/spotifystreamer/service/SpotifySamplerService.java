@@ -1,7 +1,5 @@
 package com.dankira.spotifystreamer.service;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -11,7 +9,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.SeekBar;
 
 import com.dankira.spotifystreamer.SongInfo;
 
@@ -20,17 +17,15 @@ import java.io.IOException;
 /**
  * Created by Dawit on 8/23/2015.
  */
-public class SpotifySamplerService extends Service implements MediaPlayer.OnPreparedListener,MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
+public class SpotifySamplerService
+        extends Service
+        implements MediaPlayer.OnPreparedListener,MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener,MediaPlayer.OnCompletionListener {
 
-    public static final String ACTION_PLAY = "Play";
-    public static final String ACTION_STOP = "Stop";
-    public static final String ACTION_PAUSE = "Pause";
     private MediaPlayer mMediaPlayer = null;
     private SongInfo mSongInfo;
     private MediaPlayerStatus mStatus;
     private int bufferPosition;
     private final IBinder serviceBinder = new MusicPlayerServiceBinder();
-    public static SpotifySamplerService mSpotifySamplerServiceInstance = null;
 
     private final String LOG_TAG=this.getClass().getSimpleName();
 
@@ -38,8 +33,8 @@ public class SpotifySamplerService extends Service implements MediaPlayer.OnPrep
         return bufferPosition;
     }
 
-    public void setBufferPosition(int bufferPosition) {
-        this.bufferPosition = bufferPosition;
+    public void setBufferPosition(int position) {
+        this.bufferPosition = position;
     }
 
     @Override
@@ -48,9 +43,11 @@ public class SpotifySamplerService extends Service implements MediaPlayer.OnPrep
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnBufferingUpdateListener(this);
         mMediaPlayer.setOnErrorListener(this);
+        mMediaPlayer.setOnCompletionListener(this);
 
         mSongInfo = null;
         mStatus = MediaPlayerStatus.IsRetrieving;
@@ -95,29 +92,36 @@ public class SpotifySamplerService extends Service implements MediaPlayer.OnPrep
         setBufferPosition(percent * getMusicDuration() / 100);
     }
 
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        Log.d(LOG_TAG,"Media play completed....");
+        mStatus = MediaPlayerStatus.IsStopped;
+        mMediaPlayer.seekTo(0);
+    }
+
     public void setSong(SongInfo songInfo) {
-        Log.v(LOG_TAG, "Setting new song info to ..."+ songInfo.getSongTitle());
-        StopMusicPlay();
+        Log.d(LOG_TAG, "Setting new song info to ..."+ songInfo.getSongTitle());
+        StopMusic();
         mSongInfo = songInfo;
     }
 
     public SongInfo getSongInfo(){
         return mSongInfo;
     }
-    private void StopMusicPlay() {
+    private void StopMusic() {
         if(mStatus.equals(MediaPlayerStatus.IsPlaying)){
-            Log.v(LOG_TAG,"Media Player stopped...");
+            Log.d(LOG_TAG,"Media Player stopped...");
             mMediaPlayer.stop();
             mMediaPlayer.reset();
             mStatus = MediaPlayerStatus.IsStopped;
         }
     }
 
-    public void PauseMusicPlay()
+    public void PauseMusic()
     {
         if(mStatus == MediaPlayerStatus.IsPlaying && mMediaPlayer != null)
         {
-            Log.v(LOG_TAG,"Media Player Paused...");
+            Log.d(LOG_TAG,"Media Player Paused...");
             mMediaPlayer.pause();
             mStatus = MediaPlayerStatus.IsPaused;
         }
@@ -126,7 +130,7 @@ public class SpotifySamplerService extends Service implements MediaPlayer.OnPrep
     public void PlayMusic()
     {
         if(mStatus.equals(MediaPlayerStatus.IsPaused)) {
-            Log.v(LOG_TAG, "Media Player resumed...");
+            Log.d(LOG_TAG, "Media Player resumed...");
             mMediaPlayer.start();
             mStatus = MediaPlayerStatus.IsPlaying;
             return;
@@ -143,7 +147,7 @@ public class SpotifySamplerService extends Service implements MediaPlayer.OnPrep
         try{
             mMediaPlayer.prepareAsync();
         } catch (IllegalStateException exception){
-            Log.v(LOG_TAG," Exception occurred while preparing the media url" + mSongInfo.getSampleStreamUrl() + " Exception occured is "+exception.getLocalizedMessage());
+            Log.v(LOG_TAG," Exception occurred while preparing the media url" + mSongInfo.getSampleStreamUrl() + " Exception occurred is "+exception.getLocalizedMessage());
         }
 
         mStatus = MediaPlayerStatus.IsPreparing;
@@ -176,7 +180,6 @@ public class SpotifySamplerService extends Service implements MediaPlayer.OnPrep
             mMediaPlayer.seekTo(position);
         }
     }
-
 
     public enum MediaPlayerStatus{
         IsRetrieving,

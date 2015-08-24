@@ -14,13 +14,13 @@ public class ArtistTop10 extends AppCompatActivity {
 
         if(savedInstanceState == null)
         {
-            ArtistInfo passedArtistInfo = (ArtistInfo)getIntent().getSerializableExtra("SONGINFO");
+            ArtistInfo passedArtistInfo = (ArtistInfo)getIntent().getSerializableExtra(MainActivityFragment.BUNDLE_TAG_SELECTED_ARTIST);
             Bundle args = new Bundle();
-            args.putSerializable("SONGINFO", passedArtistInfo);
+            args.putSerializable(MainActivityFragment.BUNDLE_TAG_SELECTED_ARTIST, passedArtistInfo);
             ArtistTop10Fragment df = new ArtistTop10Fragment();
             df.setArguments(args);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.artist_top10_fragment_container, df, MainActivity.DETAILFRAGMENT_TAG)
+                    .add(R.id.artist_top10_fragment_container, df, MainActivity.DETAIL_FRAGMENT_TAG)
                     .commit();
         }
     }

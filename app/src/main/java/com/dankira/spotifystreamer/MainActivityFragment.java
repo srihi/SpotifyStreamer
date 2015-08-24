@@ -1,6 +1,5 @@
 package com.dankira.spotifystreamer;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -43,6 +42,7 @@ public class MainActivityFragment extends Fragment {
     private Toast toast;
     private final String BUNDLE_TAG_SEARCH_RESULT_ARRAY = "SEARCHRESULTARRAY";
     private String LOG_TAG = this.getClass().getSimpleName();
+    public static final String BUNDLE_TAG_SELECTED_ARTIST = "SELECTED_ARTIST";
     public MainActivityFragment() {
     }
 
@@ -66,7 +66,6 @@ public class MainActivityFragment extends Fragment {
                 searchResultArray.addAll(savedResultArray);
                 searchResultListAdapter.notifyDataSetChanged();
             }
-
         }
     }
 
@@ -82,7 +81,7 @@ public class MainActivityFragment extends Fragment {
             if(searchTerm == null || searchTerm.isEmpty())
             {
                 ShowCustomToast(getString(R.string.search_term_empty));
-                Log.v(LOG_TAG," An empty string or a null parameter was passed to this method.");
+                Log.d(LOG_TAG," An empty string or a null parameter was passed to this method.");
                 return;
             }
             task.execute(searchTerm).get();
@@ -90,12 +89,12 @@ public class MainActivityFragment extends Fragment {
         catch (InterruptedException e)
         {
             e.printStackTrace();
-            Log.v(LOG_TAG,e.getMessage());
+            Log.d(LOG_TAG,e.getMessage());
         }
         catch (ExecutionException e)
         {
             e.printStackTrace();
-            Log.v(LOG_TAG, e.getMessage());
+            Log.d(LOG_TAG, e.getMessage());
         }
     }
 
@@ -120,17 +119,17 @@ public class MainActivityFragment extends Fragment {
                 ArtistInfo artistInfo = searchResultListAdapter.getItem(position);
 
                 if (MainActivity.mTwoPane) {
-                    Log.v(LOG_TAG,"Orientation is landscape....");
+                    Log.d(LOG_TAG,"Orientation is landscape....");
                     Bundle args = new Bundle();
-                    args.putSerializable("SONGINFO", artistInfo);
+                    args.putSerializable(BUNDLE_TAG_SELECTED_ARTIST, artistInfo);
                     ArtistTop10Fragment df = new ArtistTop10Fragment();
                     df.setArguments(args);
                     getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.top10fragment_container, df, MainActivity.DETAILFRAGMENT_TAG)
+                            .replace(R.id.top10fragment_container, df, MainActivity.DETAIL_FRAGMENT_TAG)
                             .commit();
                 } else {
                     Intent artistTop10DisplayIntent = new Intent(getActivity(), ArtistTop10.class);
-                    artistTop10DisplayIntent.putExtra("SONGINFO", artistInfo);
+                    artistTop10DisplayIntent.putExtra(BUNDLE_TAG_SELECTED_ARTIST, artistInfo);
                     startActivity(artistTop10DisplayIntent);
                 }
             }
@@ -186,7 +185,7 @@ public class MainActivityFragment extends Fragment {
 
             if(params.length == 0 || params[0] == null || params[0].isEmpty())
             {
-                Log.v(LOG_TAG," An empty string or a null parameter was passed to this method.");
+                Log.d(LOG_TAG," An empty string or a null parameter was passed to this method.");
                 return null;
             }
 
@@ -217,7 +216,7 @@ public class MainActivityFragment extends Fragment {
                         if (albumsPager.albums.items.size() > 0) {
                             info.setArtistImageUrl(albumsPager.albums.items.get(0).images.get(0).url);
                         } else {
-                            Log.v(LOG_TAG, "No images found for ....." + s.name);
+                            Log.d(LOG_TAG, "No images found for ....." + s.name);
                         }
                     }
                     info.setArtistName(s.name);

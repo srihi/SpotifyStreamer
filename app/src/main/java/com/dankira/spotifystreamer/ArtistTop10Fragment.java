@@ -1,14 +1,11 @@
 package com.dankira.spotifystreamer;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,8 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import com.dankira.spotifystreamer.service.SpotifySamplerService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +39,8 @@ public class ArtistTop10Fragment extends Fragment {
     private final String spotify_country_tag ="country";
     private final String spotify_top10_country_code = "us";
     private ArtistInfo mArtistInfo;
+    public static final String BUNDLE_TAG_TOP10_LIST = "Top10List";
+    public static final String BUNDLE_TAG_POSITION = "Position";
 
     public ArtistTop10Fragment() {
     }
@@ -63,19 +60,19 @@ public class ArtistTop10Fragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SongInfo songInfo = top10SongListAdapter.getItem(position);
                 if (MainActivity.mTwoPane) {
-                    Log.v(LOG_TAG, "Orientation is landscape....");
+                    Log.d(LOG_TAG, "Orientation is landscape....");
                     Bundle extras = new Bundle();
-                    extras.putSerializable("Top10List", top10ResultArray);
-                    extras.putInt("Position", position);
-                    PlayerDialog df = new PlayerDialog();
+                    extras.putSerializable(BUNDLE_TAG_TOP10_LIST, top10ResultArray);
+                    extras.putInt(BUNDLE_TAG_POSITION, position);
+                    PlayerDialogFragment df = new PlayerDialogFragment();
                     df.setArguments(extras);
                     df.show(getActivity().getSupportFragmentManager(),"Spotify Sampler");
                 } else {
-                    Log.v(LOG_TAG, "Orientation is portrait....");
+                    Log.d(LOG_TAG, "Orientation is portrait....");
                     Intent playerDialogIntent = new Intent(getActivity(), PlayerActivity.class);
                     Bundle extras = new Bundle();
-                    extras.putSerializable("Top10List", top10ResultArray);
-                    extras.putInt("Position", position);
+                    extras.putSerializable(BUNDLE_TAG_TOP10_LIST, top10ResultArray);
+                    extras.putInt(BUNDLE_TAG_POSITION, position);
                     playerDialogIntent.putExtras(extras);
                     startActivity(playerDialogIntent);
                 }
@@ -85,7 +82,7 @@ public class ArtistTop10Fragment extends Fragment {
         Bundle argument = getArguments();
         if(argument != null)
         {
-            mArtistInfo = (ArtistInfo)argument.getSerializable("SONGINFO");
+            mArtistInfo = (ArtistInfo)argument.getSerializable(MainActivityFragment.BUNDLE_TAG_SELECTED_ARTIST);
 
             if(mArtistInfo != null) {
                 getActivity().setTitle(mArtistInfo.getArtistName() + getString(R.string.title_top10));
@@ -131,13 +128,13 @@ public class ArtistTop10Fragment extends Fragment {
         catch (InterruptedException e)
         {
             //operation interrupted exception handling here .
-            Log.v(LOG_TAG,e.getMessage());
+            Log.d(LOG_TAG,e.getMessage());
             e.printStackTrace();
         }
         catch (ExecutionException e)
         {
             //any other exception
-            Log.v(LOG_TAG,e.getMessage());
+            Log.d(LOG_TAG,e.getMessage());
             e.printStackTrace();
         }
     }
@@ -159,7 +156,7 @@ public class ArtistTop10Fragment extends Fragment {
                 tracks = spotify.getArtistTopTrack(params[0], map);
             }
             catch (final RetrofitError error) {
-                Log.v(LOG_TAG, "An exception occurred while fetching tracks from spotify servers." + error.getMessage());
+                Log.d(LOG_TAG, "An exception occurred while fetching tracks from spotify servers." + error.getMessage());
                 getActivity().runOnUiThread((new Runnable() {
                     @Override
                     public void run() {
@@ -170,7 +167,7 @@ public class ArtistTop10Fragment extends Fragment {
 
             if (tracks == null)
             {
-                Log.v(LOG_TAG, "There were no tracks fetched from the servers. Nothing to display.");
+                Log.d(LOG_TAG, "There were no tracks fetched from the servers. Nothing to display.");
                 return null;
             }
             else
