@@ -34,6 +34,7 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
     private ImageButton player_button_next;
     private TextView player_seek_time;
     private TextView player_total_time;
+    private int currentPosition = 0;
 
     private static final String BUNDLE_TAG_SONG_INFO = "SelectedSong";
     private static final String BUNDLE_TAG_TOP10_LIST="Top10SongsList";
@@ -131,7 +132,6 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int currentPosition = 0;
                 while (true) {
                     try {
                         Thread.sleep(100);
