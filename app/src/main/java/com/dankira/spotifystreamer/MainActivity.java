@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         else
         {
             mTwoPane = false;
+            getSupportActionBar().setElevation(0);
         }
         if(serviceIntent == null) {
             serviceIntent = new Intent(getApplicationContext(), SpotifySamplerService.class);

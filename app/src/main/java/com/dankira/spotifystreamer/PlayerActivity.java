@@ -10,6 +10,8 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setElevation(0);
+
         setContentView(R.layout.activity_player);
 
         if(savedInstanceState == null)

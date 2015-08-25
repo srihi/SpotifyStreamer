@@ -1,14 +1,13 @@
 <resources>
-    <string name="app_name">SpotifyStreamer</string>
+    <string name="app_name">Spotify Streamer</string>
     <string name="action_settings">Settings</string>
     <string name="search_hint_text">Type Artist Name</string>
     <string name="search_launch_label">Search</string>
-    <string name="title_activity_artist_top10">ArtistTop10</string>
+    <string name="title_activity_artist_top10">Artist Top 10</string>
     <string name="title_top10">Top 10</string>
+    <string name="title_player">Sampling </string>
     <string name="connection_unavailable">There is no internet connection available.</string>
     <string name="no_artist_found">There are no artists matching search criteria.</string>
     <string name="search_term_empty">You were looking for nothing?... well here goes nothing.</string>
-    <string name="title_activity_player">PlayerActivity</string>
-
-    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_player">Sampler</string>
 </resources>

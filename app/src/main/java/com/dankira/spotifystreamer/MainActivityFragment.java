@@ -40,7 +40,7 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<ArtistInfo> searchResultArray = new ArrayList<>();
     private String searchTerm = "Jay Z";
     private Toast toast;
-    private final String BUNDLE_TAG_SEARCH_RESULT_ARRAY = "SEARCHRESULTARRAY";
+    private final String BUNDLE_TAG_SEARCH_RESULT_ARRAY = "SEARCH_RESULT_ARRAY";
     private String LOG_TAG = this.getClass().getSimpleName();
     public static final String BUNDLE_TAG_SELECTED_ARTIST = "SELECTED_ARTIST";
     public MainActivityFragment() {

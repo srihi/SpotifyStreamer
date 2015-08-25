@@ -5,10 +5,10 @@
     <dimen name="toast_padding">8dp</dimen>
     <dimen name="toast_imageview_margin">10dp</dimen>
     <dimen name="song_item_image_padding">10dp</dimen>
-    <dimen name="song_item_image_width">200dp</dimen>
-    <dimen name="song_item_image_height">200dp</dimen>
+    <dimen name="song_item_image_width">100dp</dimen>
+    <dimen name="song_item_image_height">100dp</dimen>
     <dimen name="song_item_text_margin">10dp</dimen>
-    <dimen name="artist_item_padding">10dp</dimen>
+    <dimen name="artist_item_padding">5dp</dimen>
     <dimen name="artist_item_image_padding">10dp</dimen>
     <dimen name="artist_item_image_width">100dp</dimen>
     <dimen name="artist_item_image_height">100dp</dimen>

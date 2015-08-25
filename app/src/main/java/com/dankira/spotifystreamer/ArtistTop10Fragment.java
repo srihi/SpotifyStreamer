@@ -85,7 +85,7 @@ public class ArtistTop10Fragment extends Fragment {
             mArtistInfo = (ArtistInfo)argument.getSerializable(MainActivityFragment.BUNDLE_TAG_SELECTED_ARTIST);
 
             if(mArtistInfo != null) {
-                getActivity().setTitle(mArtistInfo.getArtistName() + getString(R.string.title_top10));
+                getActivity().setTitle(mArtistInfo.getArtistName() +" - "+ getString(R.string.title_top10));
                 GetTop10Tracks(mArtistInfo.getArtistId());
             }
         }

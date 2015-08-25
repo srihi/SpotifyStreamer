@@ -11,7 +11,7 @@
         android:id="@+id/search_result_imageView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:padding="@dimen/artist_item_image_padding"
+        android:paddingRight="@dimen/artist_item_image_padding"
         android:layout_width="@dimen/artist_item_image_width"
         android:layout_height="@dimen/artist_item_image_height" />
     <TextView
@@ -20,5 +20,7 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/search_result_imageView"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed"
+        android:textAppearance="?android:textAppearanceMedium"/>
 </RelativeLayout>

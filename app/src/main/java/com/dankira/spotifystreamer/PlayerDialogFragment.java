@@ -115,22 +115,24 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
             selectedSong = (SongInfo)savedInstanceState.getSerializable(BUNDLE_TAG_SONG_INFO);
             mSongPosition = mSongInfoList.indexOf(selectedSong);
             setSongToPlay(selectedSong);
-        } else {
-            Bundle argument = getArguments();
-
-            if (argument != null) {
-                mSongInfoList = (ArrayList<SongInfo>) argument.getSerializable(ArtistTop10Fragment.BUNDLE_TAG_TOP10_LIST);
-                mSongPosition = argument.getInt(ArtistTop10Fragment.BUNDLE_TAG_POSITION);
-                selectedSong = mSongInfoList.get(mSongPosition);
-                setSongToPlay(selectedSong);
-                play(selectedSong);
-            }
         }
+        Bundle argument = getArguments();
+
+        if (argument != null) {
+            mSongInfoList = (ArrayList<SongInfo>) argument.getSerializable(ArtistTop10Fragment.BUNDLE_TAG_TOP10_LIST);
+            mSongPosition = argument.getInt(ArtistTop10Fragment.BUNDLE_TAG_POSITION);
+            selectedSong = mSongInfoList.get(mSongPosition);
+            setSongToPlay(selectedSong);
+            play(selectedSong);
+
+        }
+
+        getActivity().setTitle( getString(R.string.title_player) +" - "+ selectedSong.getSongTitle());
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                int currentPosition = 0;
                 while (true) {
                     try {
                         Thread.sleep(100);
@@ -140,6 +142,25 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
                         return;
                     }
 
+                    if (MainActivity.samplerService == null)
+                        continue;
+
+                    if (MainActivity.samplerService.isPlaying()) {
+                        isPlaying = true;
+                        currentPosition = MainActivity.samplerService.getCurrentPosition();
+                    }
+                    else{
+                        isPlaying = false;
+                    }
+
+                    final int total = MainActivity.samplerService.getMusicDuration();
+                    final String totalTime = formatTime(total);
+                    final String curTime = formatTime(currentPosition);
+
+                    player_seek_bar.setMax(total);
+                    player_seek_bar.setProgress(currentPosition);
+                    player_seek_bar.setSecondaryProgress(MainActivity.samplerService.getBufferPosition());
+
                     if (getActivity() == null)
                         return;
 
@@ -147,24 +168,6 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
                         @Override
                         public void run() {
 
-                            if (MainActivity.samplerService == null)
-                                return;
-
-                            int currentPosition = 0;
-                            if (MainActivity.samplerService.isPlaying()) {
-                                currentPosition = MainActivity.samplerService.getCurrentPosition();
-                            }
-                            else{
-                                isPlaying = false;
-                            }
-
-                            final int total = MainActivity.samplerService.getMusicDuration();
-                            final String totalTime = formatTime(total);
-                            final String curTime = formatTime(currentPosition);
-
-                            player_seek_bar.setMax(total);
-                            player_seek_bar.setProgress(currentPosition);
-                            player_seek_bar.setSecondaryProgress(MainActivity.samplerService.getBufferPosition());
 
                             if (MainActivity.samplerService.isPlaying()) {
                                 if (player_button_play != null) {
@@ -237,6 +240,7 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
         Log.d(LOG_TAG, "Play is clicked... with song: " + selectedSong.getSongTitle());
         MainActivity.samplerService.setSong(songToPlay);
         MainActivity.samplerService.PlayMusic();
+        isPlaying = true;
         player_button_play.setImageResource(R.drawable.ic_pause_black_24dp);
 
         if(mSongPosition >= mSongInfoList.size()-1) {
@@ -256,7 +260,6 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
             player_button_prev.setEnabled(true);
             player_button_prev.setClickable(true);
         }
-        isPlaying = true;
     }
 
     @Override

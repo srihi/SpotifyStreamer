@@ -121,7 +121,7 @@ public class SpotifySamplerService
     {
         if(mStatus == MediaPlayerStatus.IsPlaying && mMediaPlayer != null)
         {
-            Log.d(LOG_TAG,"Media Player Paused...");
+            Log.d(LOG_TAG, "Media Player Paused...");
             mMediaPlayer.pause();
             mStatus = MediaPlayerStatus.IsPaused;
         }
