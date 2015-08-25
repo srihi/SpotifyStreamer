@@ -1,6 +1,5 @@
 package com.dankira.spotifystreamer;
 
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
 
@@ -46,11 +44,12 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState != null)
-        {
-            selectedSong = (SongInfo)savedInstanceState.getSerializable(BUNDLE_TAG_SONG_INFO);
-            isPlaying = (boolean)savedInstanceState.getBoolean(BUNDLE_TAG_WAS_PLAYING);
-        }
+        this.setRetainInstance(true);
+//        if(savedInstanceState != null)
+//        {
+//            selectedSong = (SongInfo)savedInstanceState.getSerializable(BUNDLE_TAG_SONG_INFO);
+//            isPlaying = (boolean)savedInstanceState.getBoolean(BUNDLE_TAG_WAS_PLAYING);
+//        }
     }
 
     @Override
@@ -109,24 +108,24 @@ public class PlayerDialogFragment extends DialogFragment implements SeekBar.OnSe
             }
         });
 
-        if(savedInstanceState != null)
-        {
-            mSongInfoList = (ArrayList<SongInfo>)savedInstanceState.getSerializable(BUNDLE_TAG_TOP10_LIST);
-            selectedSong = (SongInfo)savedInstanceState.getSerializable(BUNDLE_TAG_SONG_INFO);
-            mSongPosition = mSongInfoList.indexOf(selectedSong);
-            setSongToPlay(selectedSong);
+//        if(savedInstanceState != null)
+//        {
+//            mSongInfoList = (ArrayList<SongInfo>)savedInstanceState.getSerializable(BUNDLE_TAG_TOP10_LIST);
+//            selectedSong = (SongInfo)savedInstanceState.getSerializable(BUNDLE_TAG_SONG_INFO);
+//            mSongPosition = mSongInfoList.indexOf(selectedSong);
+//            setSongToPlay(selectedSong);
+//        }
+
+        if(savedInstanceState == null) {
+            Bundle argument = getArguments();
+            if (argument != null) {
+                mSongInfoList = (ArrayList<SongInfo>) argument.getSerializable(ArtistTop10Fragment.BUNDLE_TAG_TOP10_LIST);
+                mSongPosition = argument.getInt(ArtistTop10Fragment.BUNDLE_TAG_POSITION);
+                selectedSong = mSongInfoList.get(mSongPosition);
+                play(selectedSong);
+            }
         }
-        Bundle argument = getArguments();
-
-        if (argument != null) {
-            mSongInfoList = (ArrayList<SongInfo>) argument.getSerializable(ArtistTop10Fragment.BUNDLE_TAG_TOP10_LIST);
-            mSongPosition = argument.getInt(ArtistTop10Fragment.BUNDLE_TAG_POSITION);
-            selectedSong = mSongInfoList.get(mSongPosition);
-            setSongToPlay(selectedSong);
-            play(selectedSong);
-
-        }
-
+        setSongToPlay(selectedSong);
         getActivity().setTitle( getString(R.string.title_player) +" - "+ selectedSong.getSongTitle());
 
         new Thread(new Runnable() {
